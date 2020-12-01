@@ -619,6 +619,7 @@ void PixelCPEClusterRepair::checkRecommend2D(DetParam const& theDetParam,
     if (collist[icol] == 0 && (collist[icol]-1 != 0 && collist[icol]+1!=0) || (collist[icol]-1 != 0 && collist[icol]+1 == 0) || (collist[icol]-1 == 0 && collist[icol]+1 != 0)){ // logic: if there is gap (1 column of zero, or gap wider than one column with OR statements), call clusterRepair and set edgeType to 0
 	theClusterParam.edgeTypeY_ = 0;
 	theClusterParam.recommended2D_ = true;
+	theClusterParam.hasBadPixels_ = true;
 
     }
       
