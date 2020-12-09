@@ -611,28 +611,27 @@ void PixelCPEClusterRepair::checkRecommend2D(DetParam const& theDetParam,
     int icol = int(pix.y) - col_offset;
     // &&& Do we ever get pixels that are out of bounds ???  Need to check.
     //    DetId id = (theDetParam.theDet->geographicalId());
-    if ((irow < clusterPayload.mrow) & (icol < clusterPayload.mcol))
+    if ((irow < clusterPayload.mrow) & (icol < clusterPayload.mcol)){
       clustMatrix[irow][icol] = float(pix.adc);
-  }
-
-  for (int r = 0; r < clusterPayload.mrow + 1; r++){
-    OneDrow += clustMatrix[r][mcol];
-    //    std::cout << "r is " << clustMatrix[r][mcol] << std::endl;
-    collist.push_back(OneDrow);
-  }
-
-
-  //  std::cout << "collist is " << OneDrow << std::endl;
-      
-  for (int icol=0; icol < mcol; icol++){
-
-    if ((collist[icol]) == 0 && ((collist[icol-1] != 0 && collist[icol+1]!=0) || (collist[icol-1] != 0 && collist[icol+1] == 0) || (collist[icol-1] == 0 && collist[icol+1] != 0))){ // logic: if there is gap (1 column of zero, or gap wider than one column with OR statements), call clusterRepair and set edgeType to 0
-      for (int x = 0; x < mrow; x++){
-	for (int y = 0; y < mcol; y++){
-	  printf("%.1f ", clustMatrix[x][y]);
-	}
-	printf("\n");
       }
+  }
+
+  for (int icol=0; icol < mcol; icol++){
+    for (int irow=0; irow < mrow; irow++){
+
+      OneDrow += clustMatrix[icol][irow];
+      collist.push_back(OneDrow);
+      //      std::cout << "1D projection of columns onto rows is " << OneDrow << std::endl;
+    }
+    //  }
+
+  if ((collist[icol]) == 0 && ((collist[icol-1] != 0 && collist[icol+1]!=0) || (collist[icol-1] != 0 && collist[icol+1] == 0) || (collist[icol-1] == 0 && collist[icol+1] != 0))){ // logic: if there is gap (1 column of zero, or gap wider than one column with OR statements), call clusterRepair and set edgeType to 0
+    for (int x = 0; x < mrow; x++){
+      for (int y = 0; y < mcol; y++){
+	printf("%.1f ", clustMatrix[x][y]);
+      }
+      printf("\n");
+    }
       std::cout << "collist val is " << collist[icol] << std::endl;
       
       theClusterParam.edgeTypeY_ = 0;
