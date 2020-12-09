@@ -270,6 +270,8 @@ LocalPoint PixelCPEClusterRepair::localPosition(DetParam const& theDetParam, Clu
       clustMatrix[irow][icol] = float(pix.adc);
 
   }
+
+
   // &&& Save for later: fillClustMatrix( float * clustMatrix );
 
   //--- Save a copy of clustMatrix into clustMatrix2
@@ -600,8 +602,9 @@ void PixelCPEClusterRepair::checkRecommend2D(DetParam const& theDetParam,
   //--- Prepare struct that passes pointers to TemplateReco.  It doesn't own anything.
 
   memset(clustMatrix, 0, sizeof(float) * mrow * mcol);  // Wipe it clean.
+  float OneDrow = 0;
+  std::vector<float> collist;
   for (int i = 0; i != theClusterParam.theCluster->size(); ++i) {
-    std::vector<float> collist;
     //    std::list<float> rowlist;
     auto pix = theClusterParam.theCluster->pixel(i);
     int irow = int(pix.x) - row_offset;
@@ -610,21 +613,37 @@ void PixelCPEClusterRepair::checkRecommend2D(DetParam const& theDetParam,
     //    DetId id = (theDetParam.theDet->geographicalId());
     if ((irow < clusterPayload.mrow) & (icol < clusterPayload.mcol))
       clustMatrix[irow][icol] = float(pix.adc);
+  }
+
+  for (int r = 0; r < clusterPayload.mrow + 1; r++){
+    OneDrow += clustMatrix[r][mcol];
+    //    std::cout << "r is " << clustMatrix[r][mcol] << std::endl;
+    collist.push_back(OneDrow);
+  }
 
 
-    for (int r = 0; r < clusterPayload.mrow + 1; r++){
-      collist.push_back(clustMatrix[r][icol]);
-    }
-    
-    if (collist[icol] == 0 && (collist[icol]-1 != 0 && collist[icol]+1!=0) || (collist[icol]-1 != 0 && collist[icol]+1 == 0) || (collist[icol]-1 == 0 && collist[icol]+1 != 0)){ // logic: if there is gap (1 column of zero, or gap wider than one column with OR statements), call clusterRepair and set edgeType to 0
-	theClusterParam.edgeTypeY_ = 0;
-	theClusterParam.recommended2D_ = true;
-	theClusterParam.hasBadPixels_ = true;
-
-    }
+  //  std::cout << "collist is " << OneDrow << std::endl;
       
+  for (int icol=0; icol < mcol; icol++){
+
+    if ((collist[icol]) == 0 && ((collist[icol-1] != 0 && collist[icol+1]!=0) || (collist[icol-1] != 0 && collist[icol+1] == 0) || (collist[icol-1] == 0 && collist[icol+1] != 0))){ // logic: if there is gap (1 column of zero, or gap wider than one column with OR statements), call clusterRepair and set edgeType to 0
+      for (int x = 0; x < mrow; x++){
+	for (int y = 0; y < mcol; y++){
+	  printf("%.1f ", clustMatrix[x][y]);
+	}
+	printf("\n");
+      }
+      std::cout << "collist val is " << collist[icol] << std::endl;
+      
+      theClusterParam.edgeTypeY_ = 0;
+      theClusterParam.recommended2D_ = true;
+      theClusterParam.hasBadPixels_ = true;
+      
+    }
   }
 }
+
+
 
 //------------------------------------------------------------------
 //  localError() relies on localPosition() being called FIRST!!!
