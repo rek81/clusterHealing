@@ -639,25 +639,17 @@ void PixelCPEClusterRepair::checkRecommend2D(DetParam const& theDetParam,
     }
     collist.push_back(OneDrow);
   }
-
-  
-  //  for (int x = 0; x < mrow; x++){
-  //    for (int y = 0; y < mcol; y++){
-  //      printf("%.1f ", clustMatrix[x][y]);
-  //    }
-  //    printf("\n");
-  //  }
   std::list<float> dest(collist.begin(), collist.end());
-  for (const int &i : dest){
-    
-    std::cout << "collist val is " << i << std::endl;
-  }  
-
+  //  std::cout << "list of col size before removing 0s is " << collist.size() << std::endl;
   while(collist[0] == 0){
     collist.erase (collist.begin());
   }
   while(collist[collist.size()-1] == 0){
-    collist.erase (collist.end());
+    collist.pop_back();
+    //    for (const int &i : dest){
+      
+    //    }  
+
   }
   
   
@@ -665,22 +657,22 @@ void PixelCPEClusterRepair::checkRecommend2D(DetParam const& theDetParam,
     if (icol == collist[0] || icol == collist[collist.size()-1]){
       continue;
     }
-    std::cout << "list of col size is " << collist.size() << std::endl;
     else if ((collist[icol]) == 0 && ((collist[icol-1] != 0 && collist[icol+1]!=0) || (collist[icol-1] != 0 && collist[icol+1] == 0) || (collist[icol-1] == 0 && collist[icol+1] != 0))){ // logic: if there is gap (1 column of zero, or gap wider than one column with OR statements), call clusterRepair and set edgeType to 0
+      //      std::cout << "list of col size after removing 0s is " << collist.size() << std::endl;
       theClusterParam.edgeTypeY_ = 0;
       theClusterParam.recommended2D_ = true;
       theClusterParam.hasBadPixels_ = true;
       
 
-      //    std::cout << "collist val is " << collist[icol] << std::endl;
+      std::cout << "collist val is " << collist[icol] << std::endl;
       
       
-      //      for (int x = 0; x < mrow; x++){
-      //	for (int y = 0; y < mcol; y++){
-      //	  printf("%.1f ", clustMatrix[x][y]);
-      //	}
-      //	printf("\n");
-      //      }
+      for (int x = 0; x < mrow; x++){
+      	for (int y = 0; y < mcol; y++){
+      	  printf("%.1f ", clustMatrix[x][y]);
+      	}
+      	printf("\n");
+      }
     }
   }
 }
