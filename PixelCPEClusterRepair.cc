@@ -631,51 +631,74 @@ void PixelCPEClusterRepair::checkRecommend2D(DetParam const& theDetParam,
       clustMatrix[irow][icol] = float(pix.adc);
   }
   
-  for (int irow=0; irow < mrow; irow++){
+  for (int icol=0; icol < mcol; icol++){
     float OneDrow = 0;
-    for (int icol=0; icol < mcol; icol++){
+    for (int irow=0; irow < mrow; irow++){
       //      OneDrow += clustMatrix[icol][irow];
-      OneDrow += clustMatrix[icol][irow];
+      OneDrow += clustMatrix[irow][icol];
     }
     collist.push_back(OneDrow);
   }
-  std::list<float> dest(collist.begin(), collist.end());
+
+  
+  //   for (int x = 0; x < mrow; x++){
+  //    for (int y = 0; y < mcol; y++){
+  //      printf("%.1f ", clustMatrix[x][y]);
+  //    }
+  //    printf("\n");
+  //  }
+
+
+  //  std::cout << "1D projection is ";
+  //  for (unsigned int i = 0; i < collist.size(); i++){
+  //    std::cout << collist[i] << " ";
+  //  }
+  //  std::cout << std::endl;
+  
+  //  std::list<float> dest(collist.begin(), collist.end());
   //  std::cout << "list of col size before removing 0s is " << collist.size() << std::endl;
-  while(collist[0] == 0){
-    collist.erase (collist.begin());
-  }
-  while(collist[collist.size()-1] == 0){
-    collist.pop_back();
-    //    for (const int &i : dest){
-      
-    //    }  
-
-  }
+  //  while(collist[0] == 0){
+  //    collist.erase (collist.begin());
+  //  }
+  //  while(collist[collist.size()-1] == 0){
+  //    collist.pop_back();
+  //  }
   
-  
-  for (unsigned int icol; icol < collist.size(); icol++){
-    if (icol == collist[0] || icol == collist[collist.size()-1]){
-      continue;
-    }
-    else if ((collist[icol]) == 0 && ((collist[icol-1] != 0 && collist[icol+1]!=0) || (collist[icol-1] != 0 && collist[icol+1] == 0) || (collist[icol-1] == 0 && collist[icol+1] != 0))){ // logic: if there is gap (1 column of zero, or gap wider than one column with OR statements), call clusterRepair and set edgeType to 0
+  unsigned int counter = 0;
+  for (unsigned int i=0; i < collist.size(); i++){
+    if (collist[i] > 0)
+      counter++;
+    else
+      break;
+  }
+  if (counter != collist.size()){
+  //  for (unsigned int icol; icol < collist.size(); icol++){
+  //    if (icol == collist[0] || icol == collist[collist.size()-1]){
+  //      continue;
+  //    }
+  //    else if ((collist[icol]) == 0 && ((collist[icol-1] != 0 && collist[icol+1]!=0) || (collist[icol-1] != 0 && collist[icol+1] == 0) || (collist[icol-1] == 0 && collist[icol+1] != 0))){ // logic: if there is gap (1 column of zero, or gap wider than one column with OR statements), call clusterRepair and set edgeType to 0
       //      std::cout << "list of col size after removing 0s is " << collist.size() << std::endl;
-      theClusterParam.edgeTypeY_ = 0;
-      theClusterParam.recommended2D_ = true;
-      theClusterParam.hasBadPixels_ = true;
-      
 
-      std::cout << "collist val is " << collist[icol] << std::endl;
-      
-      
-      for (int x = 0; x < mrow; x++){
-      	for (int y = 0; y < mcol; y++){
-      	  printf("%.1f ", clustMatrix[x][y]);
-      	}
-      	printf("\n");
+    std::cout << "1D projection size is " << collist.size() << std::endl;
+    std::cout << "counter size is " << counter << std::endl;
+    
+    theClusterParam.edgeTypeY_ = 0;
+    theClusterParam.recommended2D_ = true;
+    theClusterParam.hasBadPixels_ = true;
+    
+    
+    for (int x = 0; x < mrow; x++){
+      for (int y = 0; y < mcol; y++){
+	printf("%.1f ", clustMatrix[x][y]);
       }
+      printf("\n");
     }
+    std::cout << "cluster end" << std::endl;
   }
 }
+//      std::cout << "collist val is " << collist[icol] << std::endl;
+      
+      
 
 //------------------------------------------------------------------
 //  localError() relies on localPosition() being called FIRST!!!
